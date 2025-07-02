@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Editar Usuario | Busca Huellitas</title>
+  <link href="/src/login/output.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+  <div class="max-w-4xl mx-auto mt-10 bg-white shadow-lg rounded-lg p-8">
+    <h1 class="text-3xl font-bold text-center text-purple-700 mb-6">Editar Perfil</h1>
+
+    <!-- Formulario de edición -->
+    <form action="/login/editar" method="POST" enctype="multipart/form-data" class="space-y-6">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div>
+          <label class="block text-sm font-semibold text-gray-700">Nombre:</label>
+          <input type="text" name="nombre" value="<%= usuario.nombre %>" required
+            class="w-full mt-1 p-2 border rounded-md focus:ring focus:ring-purple-300" />
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-gray-700">Apellido Paterno:</label>
+          <input type="text" name="apellido_paterno" value="<%= usuario.apellido_paterno %>" required
+            class="w-full mt-1 p-2 border rounded-md focus:ring focus:ring-purple-300" />
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-gray-700">Apellido Materno:</label>
+          <input type="text" name="apellido_materno" value="<%= usuario.apellido_materno || '' %>"
+            class="w-full mt-1 p-2 border rounded-md focus:ring focus:ring-purple-300" />
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-sm font-semibold text-gray-700">Fecha de nacimiento:</label>
+        <input type="date" name="fecha_nacimiento" value="<%= usuario.fecha_nacimiento.toISOString().split('T')[0] %>"
+          class="w-full mt-1 p-2 border rounded-md focus:ring focus:ring-purple-300" />
+      </div>
+
+      <div>
+        <label class="block text-sm font-semibold text-gray-700">Fotografía:</label>
+        <input type="file" name="foto" accept="image/*"
+          class="w-full mt-1 p-2 border rounded-md focus:ring focus:ring-purple-300" />
+        <% if (usuario.foto) { %>
+          <img src="data:image/jpeg;base64,<%= usuario.foto.toString('base64') %>" alt="Foto actual"
+            class="w-32 h-32 object-cover mt-3 rounded-md shadow-md mx-auto" />
+        <% } %>
+      </div>
+
+      <fieldset class="border border-purple-300 rounded-md p-4">
+        <legend class="text-purple-600 font-semibold">Domicilio</legend>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+          <input type="text" name="calle" placeholder="Calle" value="<%= usuario.calle || '' %>"
+            class="w-full p-2 border rounded-md focus:ring focus:ring-purple-300" />
+          <input type="text" name="numero" placeholder="Número" value="<%= usuario.numero || '' %>"
+            class="w-full p-2 border rounded-md focus:ring focus:ring-purple-300" />
+          <input type="text" name="colonia" placeholder="Colonia" value="<%= usuario.colonia || '' %>"
+            class="w-full p-2 border rounded-md focus:ring focus:ring-purple-300" />
+          <input type="text" name="alcaldia" placeholder="Alcaldía / Municipio" value="<%= usuario.alcaldia || '' %>"
+            class="w-full p-2 border rounded-md focus:ring focus:ring-purple-300" />
+          <input type="text" name="estado" placeholder="Estado" value="<%= usuario.estado || '' %>"
+            class="w-full p-2 border rounded-md focus:ring focus:ring-purple-300" />
+          <input type="text" name="codigo_postal" placeholder="Código Postal" value="<%= usuario.codigo_postal || '' %>"
+            class="w-full p-2 border rounded-md focus:ring focus:ring-purple-300" />
+          <input type="number" step="any" name="latitud" placeholder="Latitud" value="<%= usuario.latitud || '' %>"
+            class="w-full p-2 border rounded-md focus:ring focus:ring-purple-300" />
+          <input type="number" step="any" name="longitud" placeholder="Longitud" value="<%= usuario.longitud || '' %>"
+            class="w-full p-2 border rounded-md focus:ring focus:ring-purple-300" />
+        </div>
+      </fieldset>
+
+      <div>
+        <label class="block text-sm font-semibold text-gray-700">Correos Electrónicos:</label>
+        <% usuario.correos.forEach((correo) => { %>
+          <input type="email" name="correos[]" value="<%= correo %>" required
+            class="w-full mt-1 p-2 border rounded-md focus:ring focus:ring-purple-300" />
+        <% }) %>
+      </div>
+
+      <div>
+        <label class="block text-sm font-semibold text-gray-700">Teléfonos:</label>
+        <% usuario.telefonos.forEach((telefono) => { %>
+          <input type="text" name="telefonos[]" value="<%= telefono %>" required
+            class="w-full mt-1 p-2 border rounded-md focus:ring focus:ring-purple-300" />
+        <% }) %>
+      </div>
+
+      <!-- Botón de guardar -->
+      <div class="flex justify-end items-center mt-6">
+        <button type="submit"
+          class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-full font-semibold">
+          Guardar Cambios
+        </button>
+      </div>
+    </form> <!-- ← cierre correcto del formulario principal -->
+
+    <!-- Formulario separado para eliminar cuenta -->
+    <form action="/login/eliminar-usuario" method="POST"
+          onsubmit="return confirm('¿Estás seguro de eliminar tu cuenta? Esta acción no se puede deshacer.')"
+          class="mt-6 text-center">
+      <button type="submit"
+        class="bg-red-600 hover:bg-red-700 text-black px-6 py-2 rounded-full font-semibold">
+        Eliminar Cuenta
+      </button>
+    </form>
+  </div>
+</body>
+</html>

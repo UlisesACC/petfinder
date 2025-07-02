@@ -153,5 +153,125 @@ router.post('/', async (req, res) => {
   }
 });
 
+// Editar usuario
+router.get('/editar', async (req, res) => {
+    if (!req.session.usuario) {
+        return res.redirect('/');
+    }
+
+    try {
+        const cliente = await pool.connect();
+        const { curp } = req.session.usuario;
+
+        const result = await cliente.query(`
+            SELECT u.*, 
+                   COALESCE(json_agg(DISTINCT ce.correo_electronico) FILTER (WHERE ce.correo_electronico IS NOT NULL), '[]') AS correos,
+                   COALESCE(json_agg(DISTINCT t.telefono) FILTER (WHERE t.telefono IS NOT NULL), '[]') AS telefonos,
+                   ub.*
+            FROM Usuarios u
+            LEFT JOIN CorreosElectronicos ce ON ce.curp = u.curp
+            LEFT JOIN Telefonos t ON t.curp = u.curp
+            LEFT JOIN ubicacion ub ON ub.id_ubicacion = u.id_ubicacion
+            WHERE u.curp = $1
+            GROUP BY u.curp, ub.id_ubicacion
+        `, [curp]);
+
+        cliente.release();
+        if (result.rows.length === 0) return res.status(404).send('Usuario no encontrado');
+
+        const usuario = result.rows[0];
+        res.render('login/editar', { usuario });
+
+    } catch (err) {
+        console.error('Error al obtener usuario para edición:', err);
+        res.status(500).send('Error interno del servidor');
+    }
+});
+
+router.post('/editar', upload.single('foto'), async (req, res) => {
+    if (!req.session.usuario) return res.redirect('/');
+
+    const { curp } = req.session.usuario;
+    const {
+        nombre,
+        apellido_paterno,
+        apellido_materno,
+        fecha_nacimiento,
+        calle,
+        numero,
+        colonia,
+        alcaldia,
+        estado,
+        codigo_postal,
+        latitud,
+        longitud,
+        correos = [],
+        telefonos = []
+    } = req.body;
+
+    try {
+        const cliente = await pool.connect();
+
+        // Actualizar ubicación (asumiendo que solo hay una por usuario)
+        const resultUbicacion = await cliente.query(`
+            UPDATE ubicacion SET
+                calle=$1, numero=$2, colonia=$3, alcaldia=$4,
+                estado=$5, codigo_postal=$6, latitud=$7, longitud=$8
+            WHERE id_ubicacion = (SELECT id_ubicacion FROM usuarios WHERE curp = $9)
+        `, [calle, numero, colonia, alcaldia, estado, codigo_postal, latitud, longitud, curp]);
+
+        // Actualizar usuario
+        await cliente.query(`
+            UPDATE usuarios SET
+                nombre=$1, apellido_paterno=$2, apellido_materno=$3, fecha_nacimiento=$4,
+                foto = COALESCE($5, foto)
+            WHERE curp = $6
+        `, [nombre, apellido_paterno, apellido_materno || null, fecha_nacimiento, req.file ? req.file.buffer : null, curp]);
+
+        // Reemplazar correos y teléfonos
+        await cliente.query(`DELETE FROM CorreosElectronicos WHERE curp = $1`, [curp]);
+        await cliente.query(`DELETE FROM Telefonos WHERE curp = $1`, [curp]);
+
+        for (const correo of Array.isArray(correos) ? correos : [correos]) {
+            if (correo.trim()) {
+                await cliente.query(`INSERT INTO CorreosElectronicos (curp, correo_electronico) VALUES ($1, $2)`, [curp, correo.trim()]);
+            }
+        }
+
+        for (const tel of Array.isArray(telefonos) ? telefonos : [telefonos]) {
+            if (tel.trim()) {
+                await cliente.query(`INSERT INTO Telefonos (curp, telefono) VALUES ($1, $2)`, [curp, tel.trim()]);
+            }
+        }
+
+        cliente.release();
+        res.redirect('/');
+
+    } catch (error) {
+        console.error('Error al actualizar usuario:', error);
+        res.status(500).send('Error al actualizar datos');
+    }
+});
+
+router.post('/eliminar-usuario', async (req, res) => {
+    if (!req.session.usuario) return res.redirect('/');
+
+    const { curp } = req.session.usuario;
+
+    try {
+        const cliente = await pool.connect();
+        await cliente.query(`DELETE FROM Usuarios WHERE curp = $1`, [curp]);
+        cliente.release();
+
+        req.session.destroy(() => {
+            res.redirect('/');
+        });
+
+    } catch (err) {
+        console.error('Error al eliminar usuario:', err);
+        res.status(500).send('Error al eliminar cuenta');
+    }
+});
+
 
 module.exports = router;

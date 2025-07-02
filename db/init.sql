@@ -1,5 +1,3 @@
--- EXTENSION PARA UUID (opcional, muy útil si quieres usar UUID en el futuro)
-CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 -- Tabla de ubicaciones
 CREATE TABLE IF NOT EXISTS ubicacion (
     id_ubicacion SERIAL PRIMARY KEY,
@@ -294,5 +292,15 @@ CREATE TABLE IF NOT EXISTS servicio_mascota (
     fecha_servicio DATE NOT NULL DEFAULT CURRENT_DATE,
     observaciones TEXT,
     costo NUMERIC CHECK (costo > 0),
-    estrellas INT CHECK (estrellas >= 1 AND estrellas <= 5) DEFAULT NULL -- Calificación del servicio (opcional, si se quiere calificar el servicio recibido
+    estrellas INT CHECK (estrellas >= 1 AND estrellas <= 5) DEFAULT NULL -- Calificación del servicio
 );
+
+INSERT INTO especie (nombre_especie) VALUES
+('Canino'),
+('Felino');
+
+INSERT INTO raza (nombre_raza, id_especie) VALUES
+('Labrador Retriever', (SELECT id_especie FROM especie WHERE nombre_especie = 'Canino')),
+('Golden Retriever', (SELECT id_especie FROM especie WHERE nombre_especie = 'Canino')),
+('Siamés', (SELECT id_especie FROM especie WHERE nombre_especie = 'Felino')),
+('Persa', (SELECT id_especie FROM especie WHERE nombre_especie = 'Felino'));
