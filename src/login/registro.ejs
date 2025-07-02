@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <title>Registro de Usuario</title>
+    <style>
+        * {
+            cursor: url('/assets/cursor.cur'), auto;
+        }
+
+        .fade-remove {
+            animation: fadeOut 0.4s forwards;
+        }
+
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                transform: scale(0.8);
+                height: 0;
+                margin: 0;
+                padding: 0;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+
+<body class="bg-gray-100">
+    <div class="max-w-4xl mx-auto mt-10 bg-white shadow-md rounded-lg p-8">
+        <h1 class="text-3xl font-bold text-center text-sky-600 mb-6">Registro de Usuario</h1>
+
+        <form action="/login/registro" method="POST" enctype="multipart/form-data" class="space-y-6">
+            <div>
+                <label class="block font-semibold text-gray-700">CURP:</label>
+                <input type="text" name="curp" required maxlength="18"
+                    class="w-full mt-1 p-2 border rounded-md focus:ring focus:ring-sky-300">
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <label class="block font-semibold text-gray-700">Nombre:</label>
+                    <input type="text" name="nombre" required
+                        class="w-full mt-1 p-2 border rounded-md focus:ring focus:ring-sky-300">
+                </div>
+                <div>
+                    <label class="block font-semibold text-gray-700">Apellido Paterno:</label>
+                    <input type="text" name="apellido_paterno" required
+                        class="w-full mt-1 p-2 border rounded-md focus:ring focus:ring-sky-300">
+                </div>
+                <div>
+                    <label class="block font-semibold text-gray-700">Apellido Materno:</label>
+                    <input type="text" name="apellido_materno"
+                        class="w-full mt-1 p-2 border rounded-md focus:ring focus:ring-sky-300">
+                </div>
+            </div>
+
+            <div>
+                <label class="block font-semibold text-gray-700">Fecha de nacimiento:</label>
+                <input type="date" name="fecha_nacimiento" id="fecha_nacimiento"
+                    class="w-full mt-1 p-2 border rounded-md focus:ring focus:ring-sky-300" max="">
+            </div>
+
+            <!-- Contraseña y verificación -->
+            <div>
+                <label class="block font-semibold text-gray-700">Contraseña:</label>
+                <input type="password" name="contrasena" id="contrasena" required
+                    class="w-full mt-1 p-2 border rounded-md focus:ring focus:ring-sky-300">
+            </div>
+
+            <div>
+                <label class="block font-semibold text-gray-700">Verifica tu contraseña:</label>
+                <input type="password" id="confirmar_contrasena" required
+                    class="w-full mt-1 p-2 border rounded-md focus:ring focus:ring-sky-300">
+            </div>
+
+            <div>
+                <label class="block font-semibold text-gray-700">Correos electrónicos:</label>
+                <div id="correosContainer" class="space-y-2">
+                    <div class="relative correo-item">
+                        <input type="email" name="correos[]" required
+                            class="w-full mt-1 p-2 border rounded-md focus:ring focus:ring-sky-300">
+                    </div>
+                </div>
+                <button type="button" onclick="agregarCorreo()" class="mt-2 text-sm text-sky-600 hover:underline">+
+                    Agregar otro correo</button>
+            </div>
+
+            <div>
+                <label class="block font-semibold text-gray-700">Teléfonos:</label>
+                <div id="telefonosContainer" class="space-y-2">
+                    <div class="relative telefono-item">
+                        <input type="text" name="telefonos[]" required
+                            class="w-full mt-1 p-2 border rounded-md focus:ring focus:ring-sky-300">
+                    </div>
+                </div>
+                <button type="button" onclick="agregarTelefono()" class="mt-2 text-sm text-sky-600 hover:underline">+
+                    Agregar otro teléfono</button>
+            </div>
+
+            <div>
+                <label class="block font-semibold text-gray-700">Fotografía del usuario:</label>
+                <input type="file" name="foto" id="foto" accept="image/*"
+                    class="w-full mt-1 p-2 border rounded-md focus:ring focus:ring-sky-300"
+                    onchange="previewFoto(event)">
+                <div id="previewFoto" class="mt-2"></div>
+            </div>
+
+            <fieldset class="border p-4 rounded-md border-sky-300">
+                <legend class="text-sky-700 font-semibold">📍 Domicilio</legend>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                    <div>
+                        <label class="block font-semibold text-gray-700">Calle:</label>
+                        <input type="text" name="calle" id="calle" placeholder="Ej. Av. Insurgentes"
+                            class="w-full p-2 border rounded-md focus:ring focus:ring-sky-300">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-gray-700">Número:</label>
+                        <input type="text" name="numero" id="numero" placeholder="Ej. 123"
+                            class="w-full p-2 border rounded-md focus:ring focus:ring-sky-300">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-gray-700">Colonia:</label>
+                        <input type="text" name="colonia" id="colonia" placeholder="Ej. Del Valle"
+                            class="w-full p-2 border rounded-md focus:ring focus:ring-sky-300">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-gray-700">Alcaldía / Municipio:</label>
+                        <input type="text" name="alcaldia" id="alcaldia" placeholder="Ej. Benito Juárez"
+                            class="w-full p-2 border rounded-md focus:ring focus:ring-sky-300">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-gray-700">Estado:</label>
+                        <input type="text" name="estado" id="estado" placeholder="Ej. Ciudad de México"
+                            class="w-full p-2 border rounded-md focus:ring focus:ring-sky-300">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-gray-700">Código Postal:</label>
+                        <input type="text" name="codigo_postal" id="codigo_postal" placeholder="Ej. 03100"
+                            class="w-full p-2 border rounded-md focus:ring focus:ring-sky-300">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-gray-700">Latitud:</label>
+                        <input type="number" step="any" name="latitud" id="latitud" placeholder="Ej. 19.4326"
+                            class="w-full p-2 border rounded-md focus:ring focus:ring-sky-300">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-gray-700">Longitud:</label>
+                        <input type="number" step="any" name="longitud" id="longitud" placeholder="Ej. -99.1332"
+                            class="w-full p-2 border rounded-md focus:ring focus:ring-sky-300">
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <button type="button" onclick="obtenerUbicacion()"
+                        class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full">
+                        📍 Obtener ubicación automática
+                    </button>
+                </div>
+
+                <div class="mt-4">
+                    <div id="map" class="w-full h-64 border border-sky-300 rounded-md"></div>
+                </div>
+            </fieldset>
+
+            <div class="text-center">
+                <button type="submit"
+                    class="bg-sky-600 hover:bg-sky-700 text-white px-6 py-2 rounded-full">Registrar</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Validación de fecha
+        document.getElementById('fecha_nacimiento').max = new Date().toISOString().split("T")[0];
+
+        function agregarCorreo() {
+            const container = document.getElementById('correosContainer');
+            const div = document.createElement('div');
+            div.className = 'relative correo-item';
+            div.innerHTML = `
+        <input type="email" name="correos[]" required class="w-full mt-1 p-2 border rounded-md focus:ring focus:ring-sky-300">
+        <button type="button" onclick="eliminarCampo(this)" class="absolute top-0 right-0 text-red-600">✖</button>`;
+            container.appendChild(div);
+        }
+
+        function agregarTelefono() {
+            const container = document.getElementById('telefonosContainer');
+            const div = document.createElement('div');
+            div.className = 'relative telefono-item';
+            div.innerHTML = `
+        <input type="text" name="telefonos[]" required class="w-full mt-1 p-2 border rounded-md focus:ring focus:ring-sky-300">
+        <button type="button" onclick="eliminarCampo(this)" class="absolute top-0 right-0 text-red-600">✖</button>`;
+            container.appendChild(div);
+        }
+
+        function eliminarCampo(btn) {
+            const container = btn.closest('.correo-item, .telefono-item');
+            if (container.parentElement.children.length > 1) {
+                anime({
+                    targets: container,
+                    opacity: [1, 0],
+                    scale: [1, 0.8],
+                    duration: 300,
+                    easing: 'easeInOutQuad',
+                    complete: () => container.remove()
+                });
+            }
+        }
+
+        function previewFoto(event) {
+            const cont = document.getElementById("previewFoto");
+            cont.innerHTML = "";
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    const img = document.createElement("img");
+                    img.src = e.target.result;
+                    img.className = "w-32 h-32 object-cover rounded-md mt-2 mx-auto";
+                    cont.appendChild(img);
+                    const btn = document.createElement("button");
+                    btn.textContent = "Eliminar";
+                    btn.className = "block mx-auto mt-2 text-sm text-red-600 hover:underline";
+                    btn.onclick = () => {
+                        document.getElementById("foto").value = "";
+                        cont.innerHTML = "";
+                    };
+                    cont.appendChild(btn);
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        const map = L.map('map').setView([19.4326, -99.1332], 12);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19, attribution: '© OpenStreetMap'
+        }).addTo(map);
+        let marker;
+
+        map.on('click', async function (e) {
+            const { lat, lng } = e.latlng;
+            document.getElementById('latitud').value = lat.toFixed(6);
+            document.getElementById('longitud').value = lng.toFixed(6);
+            if (marker) map.removeLayer(marker);
+            marker = L.circle([lat, lng], {
+                radius: 10, color: 'blue', fillColor: '#3B82F6', fillOpacity: 0.5
+            }).addTo(map);
+
+            const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`);
+            const data = await response.json();
+            if (data.address) {
+                const addr = data.address;
+                document.getElementById('alcaldia').value = addr.borough || addr.city_district || addr.county || '';
+                document.getElementById('colonia').value = addr.borough || addr.neighbourhood || addr.suburb || '';
+                document.getElementById('calle').value = addr.road || '';
+                document.getElementById('numero').value = addr.house_number || '';
+                document.getElementById('codigo_postal').value = addr.postcode || '';
+                document.getElementById('estado').value = addr.state || '';
+            }
+        });
+
+        function obtenerUbicacion() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(async position => {
+                    const lat = position.coords.latitude.toFixed(6);
+                    const lon = position.coords.longitude.toFixed(6);
+                    document.getElementById('latitud').value = lat;
+                    document.getElementById('longitud').value = lon;
+                    map.setView([lat, lon], 16);
+                    if (marker) map.removeLayer(marker);
+                    marker = L.circle([lat, lon], {
+                        radius: 10, color: 'blue', fillColor: '#3B82F6', fillOpacity: 0.5
+                    }).addTo(map);
+                    const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`);
+                    const data = await response.json();
+                    if (data.address) {
+                        const addr = data.address;
+                        document.getElementById('alcaldia').value = addr.borough || addr.city_district || addr.county || '';
+                        document.getElementById('colonia').value = addr.borough || addr.neighbourhood || addr.suburb || '';
+                        document.getElementById('calle').value = addr.road || '';
+                        document.getElementById('numero').value = addr.house_number || '';
+                        document.getElementById('codigo_postal').value = addr.postcode || '';
+                        document.getElementById('estado').value = addr.state || '';
+                    }
+                });
+            } else {
+                alert("Tu navegador no soporta geolocalización");
+            }
+        }
+        document.querySelector("form").addEventListener("submit", function (e) {
+            const pass = document.getElementById("contrasena").value;
+            const confirm = document.getElementById("confirmar_contrasena").value;
+            if (pass !== confirm) {
+                e.preventDefault();
+                alert("Las contraseñas no coinciden");
+            }
+        });
+
+    </script>
+</body>
+
+</html>
