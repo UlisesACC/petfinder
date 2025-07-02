@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Editar Mascota</title>
+  <link href="/src/alta_perro/output.css" rel="stylesheet">
+  <script>
+    async function cargarRazas(idEspecie, idRazaActual) {
+      const res = await fetch(`/alta_perro/api/razas/${idEspecie}`);
+      const razas = await res.json();
+      const select = document.getElementById("id_raza");
+      select.innerHTML = '';
+
+      razas.forEach(raza => {
+        const option = document.createElement("option");
+        option.value = raza.id_raza;
+        option.text = raza.nombre_raza;
+        if (raza.id_raza === idRazaActual) option.selected = true;
+        select.appendChild(option);
+      });
+    }
+
+    window.onload = () => {
+      const idEspecie = document.getElementById("id_especie").value;
+      const idRazaActual = parseInt(document.getElementById("id_raza_actual").value);
+      cargarRazas(idEspecie, idRazaActual);
+    };
+  </script>
+</head>
+<body class="bg-orange-100 min-h-screen p-8">
+  <div class="max-w-2xl mx-auto bg-white shadow-xl rounded-xl p-6">
+    <h1 class="text-2xl text-orange-600 font-bold mb-6 text-center">Editar Mascota</h1>
+    <form action="/alta_perro/alta/editar/<%= mascota.id_mascota %>" method="POST" class="space-y-5">
+      <input type="hidden" id="id_raza_actual" value="<%= mascota.id_raza %>">
+
+      <div>
+        <label class="block text-gray-700">Nombre</label>
+        <input type="text" name="nombre_mascota" value="<%= mascota.nombre_mascota %>" required
+          class="w-full p-3 rounded border border-gray-300">
+      </div>
+
+      <div>
+        <label class="block text-gray-700">Fecha de nacimiento</label>
+        <input type="date" name="fecha_nacimiento" value="<%= mascota.fecha_nacimiento.toISOString().split('T')[0] %>" required
+          class="w-full p-3 rounded border border-gray-300">
+      </div>
+
+      <div>
+        <label class="block text-gray-700">Especie</label>
+        <select name="id_especie" id="id_especie" onchange="cargarRazas(this.value, <%= mascota.id_raza %>)"
+          class="w-full p-3 rounded border border-gray-300">
+          <% especies.forEach(especie => { %>
+            <option value="<%= especie.id_especie %>" <%= especie.id_especie === mascota.id_especie ? 'selected' : '' %>>
+              <%= especie.nombre_especie %>
+            </option>
+          <% }) %>
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-gray-700">Raza</label>
+        <select name="id_raza" id="id_raza" class="w-full p-3 rounded border border-gray-300"></select>
+      </div>
+
+      <div>
+        <label class="block text-gray-700">Rasgos distintivos</label>
+        <textarea name="rasgos_distintivos" rows="3"
+          class="w-full p-3 border border-gray-300 rounded"><%= mascota.rasgos_distintivos || '' %></textarea>
+      </div>
+
+      <div class="text-center">
+        <button type="submit" class="bg-orange-500 text-white px-6 py-2 rounded hover:bg-orange-600">
+          Guardar cambios
+        </button>
+      </div>
+    </form>
+  </div>
+</body>
+</html>

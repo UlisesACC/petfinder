@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Alta de Mascota</title>
+    <link href="/src/alta_perro/output.css" rel="stylesheet">
+    <script>
+        async function cargarRazasPorEspecie(idEspecie) {
+            const response = await fetch(`/alta_perro/api/razas/${idEspecie}`);
+            const razas = await response.json();
+            const razaSelect = document.getElementById('id_raza');
+            razaSelect.innerHTML = '<option disabled selected value="">Selecciona una raza</option>';
+
+            razas.forEach(raza => {
+                const option = document.createElement('option');
+                option.value = raza.id_raza;
+                option.textContent = raza.nombre_raza;
+                razaSelect.appendChild(option);
+            });
+        }
+    </script>
+
+</head>
+
+<body class="bg-gradient-to-br from-orange-100 to-pink-100 min-h-screen p-8">
+    <!-- NAVBAR en alta.ejs -->
+    <nav class="bg-sky-500 shadow-md flex items-center justify-between px-4 py-2 relative overflow-hidden">
+        <div id="huellasContainer" class="absolute top-1 left-0 w-full h-full"></div>
+        <img id="perroAnimado" src="/assets/perro.gif" class="absolute top-2 h-12 opacity-90 z-0">
+        <h1 id="logo" class="font-serif text-2xl text-white cursor-pointer z-10">Busca Huellitas</h1>
+
+        <ul class="flex space-x-4 items-center z-10">
+            <li><a href="/" class="text-white hover:text-gray-200">Inicio</a></li>
+            <li><a href="/conocenos" class="text-white hover:text-gray-200">Conócenos</a></li>
+            <li><a href="/adopciones" class="text-white hover:text-gray-200">Adopciones</a></li>
+            <li><a href="/alta_perro/tabla" class="text-white hover:text-gray-200">Tabla de Mascotas</a></li>
+
+            <!-- SOLO si hay usuario -->
+            <% if (usuario) { %>
+                <li><a href="/alta_perro/especies" class="text-white hover:text-gray-200">Especies</a></li>
+                <li><a href="/alta_perro/raza" class="text-white hover:text-gray-200">Razas</a></li>
+                <li><a href="/alta_perro/alta" class="text-white hover:text-gray-200">Registrar Mascota</a></li>
+                <li class="flex items-center space-x-3">
+                    <% if (usuario.foto) { %>
+                        <img src="data:image/jpeg;base64,<%= usuario.foto %>" class="w-8 h-8 rounded-full">
+                        <% } else { %>
+                            <img src="/assets/default-user.png" class="w-8 h-8 rounded-full">
+                            <% } %>
+                                <span class="text-white">
+                                    <%= usuario.nombre %>
+                                </span>
+                                <form action="/logout" method="POST">
+                                    <button type="submit" class="ml-2 text-white hover:text-red-300">Cerrar
+                                        sesión</button>
+                                </form>
+                </li>
+                <% } else { %>
+                    <li><a href="/login" class="text-white hover:text-gray-200">Iniciar Sesión</a></li>
+                <% } %>
+        </ul>
+    </nav>
+
+    <div class="max-w-3xl mx-auto bg-white shadow-2xl p-8 rounded-2xl animate-fade-in">
+        <h1 class="text-3xl font-bold mb-6 text-center text-pink-600">Registro de Mascota</h1>
+        <form action="/alta_perro/alta" method="POST" class="space-y-6" enctype="multipart/form-data">
+
+            <div>
+                <label class="block text-gray-700">Nombre de la mascota</label>
+                <input type="text" name="nombre_mascota" required
+                    class="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-300">
+            </div>
+
+            <div>
+                <label class="block text-gray-700">Fecha de nacimiento</label>
+                <input type="date" name="fecha_nacimiento" required
+                    class="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-300">
+            </div>
+
+            <div>
+                <label class="block text-gray-700">Especie</label>
+                <select name="id_especie" id="id_especie" onchange="cargarRazasPorEspecie(this.value)" required
+                    class="w-full p-3 rounded-lg border border-gray-300">
+                    <option disabled selected value="">Selecciona una especie</option>
+                    <% especies.forEach(especie=> { %>
+                        <option value="<%= especie.id_especie %>">
+                            <%= especie.nombre_especie %>
+                        </option>
+                        <% }) %>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-gray-700">Raza</label>
+                <select name="id_raza" id="id_raza" required class="w-full p-3 rounded-lg border border-gray-300">
+                    <option disabled selected value="">Selecciona una raza</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-gray-700">Rasgos distintivos</label>
+                <textarea name="rasgos_distintivos" rows="3"
+                    class="w-full p-3 rounded-lg border border-gray-300"></textarea>
+            </div>
+
+            <div class="text-center">
+                <button type="submit"
+                    class="bg-pink-500 hover:bg-pink-600 text-white px-6 py-3 rounded-xl transition-all">Registrar</button>
+            </div>
+            <div>
+                <label class="block text-gray-700 mb-2">Fotos de la mascota</label>
+                <input type="file" name="fotos" multiple accept="image/*" class="block w-full mb-2 border rounded p-2"
+                    required>
+                <textarea name="descripcion_foto" rows="2" placeholder="Descripción general de las fotos"
+                    class="w-full p-3 rounded-lg border border-gray-300"></textarea>
+            </div>
+
+        </form>
+    </div>
+
+    <style>
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</body>
+
+</html>

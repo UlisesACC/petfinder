@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Tablas de Registro</title>
+  <link href="/src/alta_perro/output.css" rel="stylesheet">
+</head>
+
+<body class="bg-gradient-to-br from-yellow-100 to-pink-100 min-h-screen p-10">
+  <div class="max-w-7xl mx-auto space-y-12">
+
+    <!-- Tabla de Especies -->
+    <div class="bg-white rounded-xl shadow-lg p-6">
+      <h2 class="text-2xl font-bold text-pink-600 mb-4">Especies Registradas</h2>
+      <table class="table-auto w-full border border-gray-300">
+        <thead class="bg-pink-200">
+          <tr>
+            <th class="p-2 border">ID</th>
+            <th class="p-2 border">Nombre</th>
+            <th class="p-2 border">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% especies.forEach(especie => { %>
+            <tr>
+              <td class="border p-2"><%= especie.id_especie %></td>
+              <td class="border p-2"><%= especie.nombre_especie %></td>
+              <td class="border p-2 text-center">
+                <a href="/alta_perro/especies/editar/<%= especie.id_especie %>" class="text-blue-600 hover:underline">Editar</a>
+                |
+                <form action="/alta_perro/especies/eliminar/<%= especie.id_especie %>" method="POST" class="inline">
+                  <button type="submit" class="text-red-600 hover:underline">Eliminar</button>
+                </form>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Tabla de Razas -->
+    <div class="bg-white rounded-xl shadow-lg p-6">
+      <h2 class="text-2xl font-bold text-pink-600 mb-4">Razas Registradas</h2>
+      <table class="table-auto w-full border border-gray-300">
+        <thead class="bg-pink-200">
+          <tr>
+            <th class="p-2 border">ID</th>
+            <th class="p-2 border">Nombre</th>
+            <th class="p-2 border">Especie</th>
+            <th class="p-2 border">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% razas.forEach(raza => { %>
+            <tr>
+              <td class="border p-2"><%= raza.id_raza %></td>
+              <td class="border p-2"><%= raza.nombre_raza %></td>
+              <td class="border p-2"><%= raza.nombre_especie %></td>
+              <td class="border p-2 text-center">
+                <a href="/alta_perro/raza/editar/<%= raza.id_raza %>" class="text-blue-600 hover:underline">Editar</a>
+                |
+                <form action="/alta_perro/raza/<%= raza.id_raza %>?_method=DELETE" method="POST" class="inline">
+                  <button type="submit" class="text-red-600 hover:underline">Eliminar</button>
+                </form>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Tabla de Mascotas -->
+    <div class="bg-white rounded-xl shadow-lg p-6">
+      <h2 class="text-2xl font-bold text-pink-600 mb-4">Mascotas Registradas</h2>
+      <table class="table-auto w-full border border-gray-300">
+        <thead class="bg-pink-200">
+          <tr>
+            <th class="p-2 border">ID</th>
+            <th class="p-2 border">Nombre</th>
+            <th class="p-2 border">Especie</th>
+            <th class="p-2 border">Raza</th>
+            <th class="p-2 border">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% mascotas.forEach(m => { %>
+            <tr>
+              <td class="border p-2"><%= m.id_mascota %></td>
+              <td class="border p-2"><%= m.nombre_mascota %></td>
+              <td class="border p-2"><%= m.nombre_especie %></td>
+              <td class="border p-2"><%= m.nombre_raza %></td>
+              <td class="border p-2 text-center">
+                <a href="/alta_perro/alta/editar/<%= m.id_mascota %>" class="text-blue-600 hover:underline">Editar</a>
+                |
+                <form action="/alta_perro/eliminar_mascota/<%= m.id_mascota %>" method="POST" class="inline">
+                  <button type="submit" class="text-red-600 hover:underline">Eliminar</button>
+                </form>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</body>
+
+</html>

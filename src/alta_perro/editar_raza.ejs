@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Editar Raza</title>
+  <link href="/src/alta_perro/output.css" rel="stylesheet">
+</head>
+<body class="bg-gradient-to-br from-yellow-100 to-orange-100 min-h-screen p-8">
+  <div class="max-w-xl mx-auto bg-white p-6 rounded-xl shadow-xl">
+    <h1 class="text-2xl font-bold mb-6 text-center text-orange-600">Editar Raza</h1>
+
+    <form action="/alta_perro/raza/editar/<%= raza.id_raza %>" method="POST" class="space-y-4">
+      <div>
+        <label class="block text-gray-700 font-semibold mb-2">Nombre de la raza</label>
+        <input
+          type="text"
+          name="nombre_raza"
+          value="<%= raza.nombre_raza %>"
+          required
+          class="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-300"
+        >
+      </div>
+
+      <div>
+        <label class="block text-gray-700 font-semibold mb-2">Especie asociada</label>
+        <select name="id_especie" required class="w-full p-3 border border-gray-300 rounded-lg">
+          <% especies.forEach(especie => { %>
+            <option value="<%= especie.id_especie %>" <%= raza.id_especie === especie.id_especie ? 'selected' : '' %>>
+              <%= especie.nombre_especie %>
+            </option>
+          <% }) %>
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-gray-700 font-semibold mb-2">Descripción</label>
+        <textarea
+          name="descripcion"
+          rows="3"
+          class="w-full p-3 border border-gray-300 rounded-lg"
+        ><%= raza.descripcion || '' %></textarea>
+      </div>
+
+      <div class="text-center">
+        <button
+          type="submit"
+          class="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-lg transition-all"
+        >
+          Guardar cambios
+        </button>
+      </div>
+    </form>
+  </div>
+</body>
+</html>

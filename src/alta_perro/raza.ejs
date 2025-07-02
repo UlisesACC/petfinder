@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Registrar Raza</title>
+  <link href="/src/alta_perro/output.css" rel="stylesheet">
+</head>
+<body class="bg-pink-100 p-8">
+  <div class="max-w-xl mx-auto bg-white p-6 rounded-xl shadow-xl">
+    <h1 class="text-2xl font-bold mb-4 text-center text-pink-600">Registrar nueva raza</h1>
+    <form action="/alta_perro/raza" method="POST" class="space-y-4">
+      <select name="id_especie" required class="w-full p-3 border border-gray-300 rounded-md">
+        <option value="">Selecciona una especie</option>
+        <% especies.forEach(especie => { %>
+          <option value="<%= especie.id_especie %>"><%= especie.nombre_especie %></option>
+        <% }) %>
+      </select>
+
+      <input type="text" name="nombre_raza" placeholder="Nombre de la raza" required
+        class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-pink-400">
+
+      <textarea name="descripcion" placeholder="Descripción (opcional)"
+        class="w-full p-3 border border-gray-300 rounded-md"></textarea>
+
+      <button type="submit" class="bg-pink-500 text-white px-4 py-2 rounded hover:bg-pink-600">
+        Guardar raza
+      </button>
+    </form>
+  </div>
+</body>
+</html>
