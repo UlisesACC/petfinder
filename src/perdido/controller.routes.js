@@ -5,7 +5,6 @@ const pool = require('../db');
 // Mostrar formulario para reportar mascota perdida
 router.get('/alta', async (req, res) => {
   try {
-    // Solo mostrar mascotas que pertenezcan al usuario actual y no estén marcadas como 'Perdida'
     const result = await pool.query(`
       SELECT m.id_mascota, m.nombre_mascota
       FROM mascota m

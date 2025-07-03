@@ -1,3 +1,8 @@
+Para compilar el proyecto requiere de docker y en terminal de la raiz del proyecto ponerle 
+```bash
+docker-compose up --build
+```
+
 Para agregar el css nota modificar la ruta segun el archivo y agregar los input.css
 input.css:
 ```css
