@@ -31,6 +31,7 @@ app.use('/login', require('./src/login/controller.routes'));
 app.use('/', require('./src/inicio/controller.routes'));
 app.use('/alta_perro', require('./src/alta_perro/controller.routes'));
 app.use('/albergue', require('./src/albergue/controller.routes'));
+app.use('/perdido', require('./src/perdido/controller.routes'));
 
 // Iniciar servidor
 app.listen(port, () => {

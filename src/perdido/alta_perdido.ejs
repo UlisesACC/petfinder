@@ -1,11 +1,142 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <title>Reportar Mascota Perdida</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
-<body>
-    
+<body class="bg-orange-100">
+  <div class="max-w-4xl mx-auto mt-10 bg-white shadow-md rounded-lg p-8">
+    <h1 class="text-3xl font-bold text-center text-red-600 mb-6">Reportar Mascota Perdida</h1>
+
+    <form action="/perdido/alta" method="POST" class="space-y-6">
+
+      <div>
+        <label class="block font-semibold text-gray-700">Selecciona la mascota:</label>
+        <select name="id_mascota" required class="w-full p-2 border rounded-md">
+          <option disabled selected value="">-- Elige una mascota --</option>
+          <% mascotas.forEach(m => { %>
+            <option value="<%= m.id_mascota %>"><%= m.nombre_mascota %></option>
+          <% }) %>
+        </select>
+      </div>
+
+      <div>
+        <label class="block font-semibold text-gray-700">Descripción del incidente:</label>
+        <textarea name="descripcion" rows="4" class="w-full p-2 border rounded-md" required></textarea>
+      </div>
+
+      <div>
+        <label class="block font-semibold text-gray-700">Recompensa ofrecida (opcional):</label>
+        <input type="number" name="recompensa" min="0" step="0.01"
+               class="w-full p-2 border rounded-md" placeholder="Ej. 500.00">
+      </div>
+
+      <!-- Ubicación del extravío -->
+      <fieldset class="border p-4 rounded-md border-red-300">
+        <legend class="text-red-700 font-semibold">📍 Última ubicación conocida</legend>
+        <input type="hidden" name="latitud" id="latitud">
+        <input type="hidden" name="longitud" id="longitud">
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+          <div>
+            <label class="block font-semibold text-gray-700">Calle:</label>
+            <input type="text" name="calle" id="calle" class="w-full p-2 border rounded-md">
+          </div>
+          <div>
+            <label class="block font-semibold text-gray-700">Número:</label>
+            <input type="text" name="numero" id="numero" class="w-full p-2 border rounded-md">
+          </div>
+          <div>
+            <label class="block font-semibold text-gray-700">Colonia:</label>
+            <input type="text" name="colonia" id="colonia" class="w-full p-2 border rounded-md">
+          </div>
+          <div>
+            <label class="block font-semibold text-gray-700">Alcaldía / Municipio:</label>
+            <input type="text" name="alcaldia" id="alcaldia" class="w-full p-2 border rounded-md">
+          </div>
+          <div>
+            <label class="block font-semibold text-gray-700">Estado:</label>
+            <input type="text" name="estado" id="estado" class="w-full p-2 border rounded-md">
+          </div>
+          <div>
+            <label class="block font-semibold text-gray-700">Código Postal:</label>
+            <input type="text" name="codigo_postal" id="codigo_postal" class="w-full p-2 border rounded-md">
+          </div>
+        </div>
+
+        <div class="mt-4">
+          <button type="button" onclick="obtenerUbicacion()"
+                  class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-full">
+            📍 Obtener ubicación automática
+          </button>
+        </div>
+
+        <div class="mt-4">
+          <div id="map" class="w-full h-64 border border-red-300 rounded-md"></div>
+        </div>
+      </fieldset>
+
+      <div class="text-center">
+        <button type="submit"
+                class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-full">
+          Reportar como Perdida
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    const map = L.map('map').setView([19.4326, -99.1332], 12);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19, attribution: '© OpenStreetMap'
+    }).addTo(map);
+    let marker;
+
+    map.on('click', async function (e) {
+      const { lat, lng } = e.latlng;
+      setUbicacion(lat, lng);
+      await reverseGeocode(lat, lng);
+    });
+
+    function obtenerUbicacion() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(async position => {
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+          map.setView([lat, lon], 16);
+          setUbicacion(lat, lon);
+          await reverseGeocode(lat, lon);
+        });
+      } else {
+        alert("Tu navegador no soporta geolocalización");
+      }
+    }
+
+    function setUbicacion(lat, lon) {
+      document.getElementById('latitud').value = lat.toFixed(6);
+      document.getElementById('longitud').value = lon.toFixed(6);
+      if (marker) map.removeLayer(marker);
+      marker = L.circle([lat, lon], {
+        radius: 10, color: 'red', fillColor: '#F87171', fillOpacity: 0.5
+      }).addTo(map);
+    }
+
+    async function reverseGeocode(lat, lon) {
+      const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`);
+      const data = await response.json();
+      if (data.address) {
+        const addr = data.address;
+        document.getElementById('alcaldia').value = addr.borough || addr.city_district || addr.county || '';
+        document.getElementById('colonia').value = addr.borough || addr.neighbourhood || addr.suburb || '';
+        document.getElementById('calle').value = addr.road || '';
+        document.getElementById('numero').value = addr.house_number || '';
+        document.getElementById('codigo_postal').value = addr.postcode || '';
+        document.getElementById('estado').value = addr.state || '';
+      }
+    }
+  </script>
 </body>
 </html>

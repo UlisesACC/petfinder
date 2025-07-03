@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Mascotas Perdidas</title>
+  <link href="/src/perdido/output.css" rel="stylesheet">
+  <style>
+    * {
+      cursor: url('/assets/cursor.cur'), auto;
+    }
+  </style>
+</head>
+<body class="bg-gray-100 p-6">
+  <h1 class="text-3xl font-bold text-center text-sky-700 mb-6">Tabla de Mascotas Perdidas</h1>
+
+  <div class="overflow-x-auto shadow-lg rounded-lg">
+    <table class="min-w-full bg-white">
+      <thead class="bg-sky-500 text-white">
+        <tr>
+          <th class="py-3 px-4 text-left">Foto</th>
+          <th class="py-3 px-4 text-left">Nombre</th>
+          <th class="py-3 px-4 text-left">Descripción</th>
+          <th class="py-3 px-4 text-left">Recompensa</th>
+          <th class="py-3 px-4 text-left">Fecha de reporte</th>
+          <th class="py-3 px-4 text-left">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% reportes.forEach(r => { %>
+          <tr class="border-b hover:bg-sky-50">
+            <td class="py-3 px-4">
+              <% if (r.foto) { %>
+                <img src="data:image/jpeg;base64,<%= r.foto %>" class="h-16 rounded" />
+              <% } else { %>
+                <img src="/assets/default-user.png" class="h-16 rounded" />
+              <% } %>
+            </td>
+            <td class="py-3 px-4"><%= r.nombre_mascota %></td>
+            <td class="py-3 px-4"><%= r.descripcion || 'Sin descripción' %></td>
+            <td class="py-3 px-4">$<%= r.recompensa || '0.00' %></td>
+            <td class="py-3 px-4"><%= r.fecha_reporte.toISOString().split('T')[0] %></td>
+            <td class="py-3 px-4 space-x-2">
+              <form action="/perdido/eliminar/<%= r.id %>?_method=DELETE" method="POST" onsubmit="return confirm('¿Eliminar este reporte?')">
+                <button type="submit" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-700 text-sm">Eliminar</button>
+              </form>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>

@@ -69,6 +69,14 @@
                     Editar Perfil
                 </a>
                 </li>
+                
+                <li>
+                <a href="/perdido/tabla"
+                    class="block text-white text-lg hover:bg-white hover:text-sky-500 rounded-md px-3 py-2 transition">
+                </a>
+                </li>
+
+                <li><a href="/perdido/alta" class="block text-white text-lg hover:bg-white hover:text-sky-500 rounded-md px-3 py-2 transition">Reportar Mascota Perdida</a></li>
                 <% } else { %>
                     <li>
                         <a href="/login"
@@ -141,6 +149,22 @@
             </ul>
         </div>
 
+    </div>
+    <h2 class="text-3xl font-bold mb-6 text-center text-sky-700">Mascotas Perdidas</h2>
+    <div class="overflow-hidden relative max-w-4xl mx-auto rounded-lg shadow-lg">
+    <div id="carrusel" class="flex transition-transform duration-700 ease-in-out">
+        <% mascotas_perdidas.forEach(m => { %>
+        <div class="w-full flex-shrink-0 p-4 bg-white text-center">
+            <% if (m.foto) { %>
+            <img src="data:image/jpeg;base64,<%= m.foto %>" class="mx-auto h-64 object-cover rounded-lg mb-4" />
+            <% } else { %>
+            <img src="/assets/default-user.png" class="mx-auto h-64 object-cover rounded-lg mb-4" />
+            <% } %>
+            <h3 class="text-xl font-bold text-gray-800"><%= m.nombre_mascota %></h3>
+            <p class="text-sm text-gray-600"><%= m.descripcion || 'Sin descripción disponible' %></p>
+        </div>
+        <% }) %>
+    </div>
     </div>
 
     <!-- Scripts -->
@@ -249,6 +273,18 @@
             }
         });
 
+        let index = 0;
+        const carrusel = document.getElementById('carrusel');
+        const total = <%= mascotas_perdidas.length %>;
+
+        function moverCarrusel() {
+            index = (index + 1) % total;
+            carrusel.style.transform = `translateX(-${index * 100}%)`;
+        }
+
+        if (total > 1) {
+            setInterval(moverCarrusel, 3000);
+        }
     </script>
 
     <!-- Perro animado -->
