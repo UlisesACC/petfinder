@@ -30,6 +30,7 @@ app.use('/src', express.static(path.join(__dirname, 'src')));
 app.use('/login', require('./src/login/controller.routes'));
 app.use('/', require('./src/inicio/controller.routes'));
 app.use('/alta_perro', require('./src/alta_perro/controller.routes'));
+app.use('/albergue', require('./src/albergue/controller.routes'));
 
 // Iniciar servidor
 app.listen(port, () => {

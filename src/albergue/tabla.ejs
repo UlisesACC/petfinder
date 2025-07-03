@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Albergues Registrados</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+  <div class="max-w-6xl mx-auto mt-10 bg-white shadow-md rounded-lg p-6">
+    <h1 class="text-3xl font-bold text-center text-sky-600 mb-6">Albergues Registrados</h1>
+
+    <div class="mb-4 text-right">
+      <a href="/albergue/alta"
+         class="bg-sky-500 hover:bg-sky-600 text-white px-4 py-2 rounded-lg">
+        + Registrar nuevo albergue
+      </a>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="min-w-full bg-white border border-gray-300">
+        <thead class="bg-sky-100">
+          <tr>
+            <th class="py-2 px-4 border-b">Nombre</th>
+            <th class="py-2 px-4 border-b">Teléfono</th>
+            <th class="py-2 px-4 border-b">Correo</th>
+            <th class="py-2 px-4 border-b text-center">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (albergues.length === 0) { %>
+            <tr>
+              <td colspan="4" class="text-center py-4 text-gray-500">No hay albergues registrados.</td>
+            </tr>
+          <% } else { %>
+            <% albergues.forEach(albergue => { %>
+              <tr class="hover:bg-gray-100">
+                <td class="py-2 px-4 border-b"><%= albergue.nombre %></td>
+                <td class="py-2 px-4 border-b"><%= albergue.telefono || '—' %></td>
+                <td class="py-2 px-4 border-b"><%= albergue.correo || '—' %></td>
+                <td class="py-2 px-4 border-b text-center space-x-4">
+                  <a href="/albergue/editar/<%= albergue.id_albergue %>"
+                     class="text-blue-600 hover:underline">Editar</a>
+                  <form action="/albergue/<%= albergue.id_albergue %>?_method=DELETE" method="POST" style="display:inline;">
+                    <button type="submit"
+                            onclick="return confirm('¿Estás seguro de eliminar este albergue?')"
+                            class="text-red-600 hover:underline">Eliminar</button>
+                  </form>
+                </td>
+              </tr>
+            <% }) %>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</body>
+</html>
