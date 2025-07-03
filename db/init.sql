@@ -88,7 +88,7 @@ CREATE TABLE IF NOT EXISTS mascota (
     id_mascota SERIAL PRIMARY KEY,
     nombre_mascota VARCHAR(100) NOT NULL,
     id_especie INT REFERENCES especie(id_especie),
-    id_raza INT REFERENCES raza(id_raza), -- ← relación directa
+    id_raza INT REFERENCES raza(id_raza), 
     fecha_nacimiento DATE,
     rasgos_distintivos TEXT
 );
