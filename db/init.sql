@@ -168,7 +168,7 @@ CREATE TABLE IF NOT EXISTS mascota_adopcion (
     descripcion TEXT,
     estado VARCHAR(20) NOT NULL DEFAULT 'Disponible'
 );
--- Tabla de albergues (ya la tienes si no tienes conflicto)
+-- Tabla de albergues 
 CREATE TABLE IF NOT EXISTS albergue (
     id_albergue SERIAL PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
