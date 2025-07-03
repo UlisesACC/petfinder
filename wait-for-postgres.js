@@ -10,7 +10,7 @@ let attempts = 0;
 
 function check() {
   const socket = net.createConnection(port, host, () => {
-    console.log("🟢 PostgreSQL está listo. Iniciando app...");
+    console.log("PostgreSQL está listo. Iniciando app...");
     socket.end();
     require('./server.js'); // ejecuta tu app normalmente
   });
@@ -18,10 +18,10 @@ function check() {
   socket.on('error', () => {
     attempts++;
     if (attempts >= maxRetries) {
-      console.error("❌ No se pudo conectar a PostgreSQL.");
+      console.error("No se pudo conectar a PostgreSQL.");
       process.exit(1);
     }
-    console.log(`🔁 Esperando a PostgreSQL... intento ${attempts}/${maxRetries}`);
+    console.log(`Esperando a PostgreSQL... intento ${attempts}/${maxRetries}`);
     setTimeout(check, retryDelay);
   });
 }

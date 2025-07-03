@@ -15,4 +15,6 @@ terminal:
 npx tailwindcss -i ./src/inicio/input.css -o ./src/inicio/output.css --minify
 npx tailwindcss -i ./src/login/input.css -o ./src/login/output.css --minify
 npx tailwindcss -i ./src/alta_perro/input.css -o ./src/alta_perro/output.css --minify
+npx tailwindcss -i ./src/albergue/input.css -o ./src/albergue/output.css --minify
+npx tailwindcss -i ./src/perdido/input.css -o ./src/perdido/output.css --minify
 ```

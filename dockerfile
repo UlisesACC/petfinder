@@ -15,7 +15,7 @@ WORKDIR /app
 
 COPY package.json ./
 
-# Instala TODAS las dependencias
+# Instalando TODAS las dependencias
 RUN npm install
 
 COPY . .

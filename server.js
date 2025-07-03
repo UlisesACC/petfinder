@@ -14,7 +14,7 @@ const methodOverride = require('method-override');
 app.use(methodOverride('_method')); 
 // Configuraciones de Express
 app.use(session({
-  secret: 'busca_huellitas_super_secreto', // usa una cadena más fuerte en producción
+  secret: 'busca_huellitas_super_secreto', 
   resave: false,
   saveUninitialized: false
 }));

@@ -102,20 +102,22 @@ router.get('/alta', async (req, res) => {
 router.post('/alta', upload.array('fotos'), async (req, res) => {
   const { nombre_mascota, fecha_nacimiento, id_especie, id_raza, rasgos_distintivos, descripcion_foto } = req.body;
   const fotos = req.files;
+  const usuario = req.session.usuario;
 
   const cliente = await pool.connect();
   try {
     await cliente.query('BEGIN');
 
+    // Insertar mascota
     const resultMascota = await cliente.query(
       `INSERT INTO mascota (nombre_mascota, fecha_nacimiento, id_especie, id_raza, rasgos_distintivos)
        VALUES ($1, $2, $3, $4, $5)
        RETURNING id_mascota`,
       [nombre_mascota, fecha_nacimiento, id_especie, id_raza, rasgos_distintivos]
     );
-
     const id_mascota = resultMascota.rows[0].id_mascota;
 
+    // Insertar fotos
     for (const foto of fotos) {
       await cliente.query(
         `INSERT INTO foto_mascota (id_mascota, imagen, descripcion)
@@ -123,6 +125,22 @@ router.post('/alta', upload.array('fotos'), async (req, res) => {
         [id_mascota, foto.buffer, descripcion_foto || null]
       );
     }
+
+    // Registrar propietario (si hay sesión activa)
+    if (usuario && usuario.curp) {
+      await cliente.query(
+        `INSERT INTO propietario_mascota (id_mascota, curp, tipo_relacion)
+         VALUES ($1, $2, 'Dueño')`,
+        [id_mascota, usuario.curp]
+      );
+    }
+
+    // Registrar estado inicial
+    await cliente.query(
+      `INSERT INTO estado_mascota (id_mascota, estado)
+       VALUES ($1, 'Disponible')`,
+      [id_mascota]
+    );
 
     await cliente.query('COMMIT');
     res.redirect('/alta_perro/alta');
@@ -135,7 +153,7 @@ router.post('/alta', upload.array('fotos'), async (req, res) => {
   }
 });
 
-// API para cargar razas por especie
+// cargar razas por especie
 router.get('/api/razas/:id_especie', async (req, res) => {
   const { id_especie } = req.params;
   try {
@@ -205,7 +223,7 @@ router.get('/especies/editar/:id', async (req, res) => {
   }
 });
 
-// Guardar cambios de especie (ya lo tienes, pero asegúrate que esté así)
+// Guardar cambios de especie 
 router.post('/especies/editar/:id', async (req, res) => {
   const { id } = req.params;
   const { nombre_especie } = req.body;

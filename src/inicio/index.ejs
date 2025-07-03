@@ -158,7 +158,7 @@
             mainContent.classList.remove('ml-64');
         });
 
-        // Dropdown Servicios
+        
         const dropdownButton = document.getElementById('dropdownButton');
         const dropdownMenu = document.getElementById('dropdownMenu');
 
@@ -166,7 +166,7 @@
             dropdownMenu.classList.toggle('hidden');
         });
 
-        // Cerrar el dropdown al hacer clic fuera
+        
         document.addEventListener('click', (e) => {
             if (!dropdownButton.contains(e.target) && !dropdownMenu.contains(e.target)) {
                 dropdownMenu.classList.add('hidden');
@@ -187,7 +187,7 @@
                 perro.style.animation = "caminarPerroNavbar 30s ease-in-out";
             });
 
-            // Generamos huellas cada cierta distancia (más separado)
+            
             let huellaInterval = setInterval(() => {
                 const rect = perro.getBoundingClientRect();
                 const navRect = huellasContainer.getBoundingClientRect();
@@ -198,12 +198,12 @@
                 huella.className = 'absolute h-6 top-8';
                 huella.style.left = `${posicion}px`;
 
-                // Guardamos la posición inicial para calcular distancia después
+                
                 huella.dataset.x = posicion;
                 huellasContainer.appendChild(huella);
-            }, 400); // cada 400 ms deja una huella (más separado que antes)
+            }, 400); 
 
-            // Animación para actualizar la opacidad progresiva
+            
             let opacidadInterval = setInterval(() => {
                 const huellas = huellasContainer.querySelectorAll('img');
                 const rect = perro.getBoundingClientRect();
@@ -212,19 +212,19 @@
 
                 huellas.forEach(h => {
                     const distancia = Math.abs(perroX - h.dataset.x);
-                    let opacidad = 1 - (distancia / 400);  // cuanto más lejos, menos opacidad
+                    let opacidad = 1 - (distancia / 400);  
                     if (opacidad < 0) opacidad = 0;
                     h.style.opacity = opacidad;
                 });
 
-            }, 100); // cada 100ms recalcula opacidades
+            }, 100); 
 
             perro.addEventListener("animationend", () => {
                 perro.style.animation = "";
                 clearInterval(huellaInterval);
                 clearInterval(opacidadInterval);
 
-                // Limpiar todas las huellas después de cada recorrido
+                
                 huellasContainer.innerHTML = "";
 
                 setTimeout(animarPerroNavbar, 4000);
@@ -233,7 +233,7 @@
 
         window.onload = animarPerroNavbar;
 
-        // Dropdown Mascotas
+        
         const dropdownMascotas = document.getElementById('dropdownMascotas');
         const menuMascotas = document.getElementById('menuMascotas');
 
@@ -241,7 +241,7 @@
             menuMascotas.classList.toggle('hidden');
         });
 
-        // Cerrar el dropdown al hacer clic fuera
+        
         document.addEventListener('click', (e) => {
             if (!dropdownMascotas.contains(e.target) && !menuMascotas.contains(e.target)) {
                 menuMascotas.classList.add('hidden');
